@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API de Dominios/Pesquisa</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Pesquisa de Eletrônicos</h1>
+        <input type="text" id="searchInput" placeholder="Digite sua pesquisa...">
+        <button id="searchButton">Pesquisar</button>
+        <div id="results"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const resultsDiv = document.getElementById('results');
+
+            searchButton.addEventListener('click', () => {
+                const query = searchInput.value.trim();
+
+                if (query) {
+                    fetch(`/search?q=${query}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            displayResults(data.results);
+                        })
+                        .catch(error => {
+                            console.error('Ocorreu um erro ao buscar os resultados:', error);
+                        });
+                } else {
+                    resultsDiv.innerHTML = '<p>Por favor, insira um termo de pesquisa.</p>';
+                }
+            });
+
+            function displayResults(results) {
+                resultsDiv.innerHTML = '';
+
+                if (results.length > 0) {
+                    results.forEach(result => {
+                        const resultItem = document.createElement('div');
+                        resultItem.classList.add('result-item');
+                        resultItem.innerHTML = `
+                            <h2>${result.title}</h2>
+                            <p>${result.description}</p>
+                        `;
+                        resultsDiv.appendChild(resultItem);
+                    });
+                } else {
+                    resultsDiv.innerHTML = '<p>Nenhum resultado encontrado.</p>';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
